@@ -10,8 +10,8 @@ This project mainly implements a symbolic EVM in rosette, and it use it to maxim
 If you want to use docker:
 
 ```bash
-docker pull shanjiaming/sentinel-rosette-env:latest
-docker run -it shanjiaming/sentinel-rosette-env:latest
+docker build -t sentinel-rosette .
+docker run -it sentinel-rosette bash
 ```
 
 Then git clone this repo in the docker container.

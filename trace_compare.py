@@ -13,7 +13,6 @@ def translate_stack_string(s):
     hex_values = re.findall(r'E\[(0x[0-9a-fA-F]+)\]', s)
     return hex_values
 
-print(len(data__my['debug_arena']), len(data_ans['debug_arena']))
 
 
 # to add: blockrandkey -> (chapter_index, jumpdest_count, steps_after_jumpdest)
@@ -128,5 +127,6 @@ if len(data__my['debug_arena']) != len(data_ans['debug_arena']):
     print("ERROR: Chapter length mismatch!")
     print("python forge_debugger_locator.py", *ans_locator)
     print("MY locator (blockrandkey):", my_locator)
+    print(len(data__my['debug_arena']), len(data_ans['debug_arena']))
     print("============================================")
     assert False

@@ -35,6 +35,8 @@ echo "trace_compare start"
 python trace_compare.py
 echo "trace_compare done"
 
+echo "out/${EXP_NAME}/result.txt is the result path. README.md tells you how to readthe result."
+
 # if anything wrong, run this to compare trace
 # forge debug ./sol/${EXP_NAME}.sol --rpc-url https://eth-mainnet.g.alchemy.com/v2/P-x0L9coIqzuhfI091DXitR7BzYbABFA
 # python forge_debugger_locator.py C s k

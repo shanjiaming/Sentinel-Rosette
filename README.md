@@ -5,6 +5,21 @@ This project mainly implements a symbolic EVM in rosette, and it use it to maxim
 
 ## Requirements:
 
+### Docker
+
+If you want to use docker:
+
+```bash
+docker pull shanjiaming/sentinel-rosette-env:latest
+docker run -it shanjiaming/sentinel-rosette-env:latest
+```
+
+So you don't need to install dependencies.
+
+### Install dependencies
+
+If you want to install dependencies by yourself, you can do the following:
+
 Install foundary toolchain(forge, cast, anvil)
 ```bash
 curl -L https://foundry.paradigm.xyz | bash

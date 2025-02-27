@@ -159,16 +159,20 @@ class FunctionExtractor:
                     # Append the non-fallthrough successor to the function sig list
                     for succ in [s for s in b.succs if s != b.fallthrough]:
                         func_sigs.append((succ, hex(sig.const_value)))
+                        # print(f"line 162: func_sigs: {func_sigs}")
 
                     # Save the fallthrough location so the last one can be added as
                     # the fallback function
                     if b.fallthrough is not None:
                         fallthroughs.append(b.fallthrough)
-
+                        # print(f"line 168: block with fallthroughs: {(hex(b.entry), hex(b.fallthrough.entry))}")
         # Add the fallback function
         if fallthroughs:
             func_sigs.append((fallthroughs[-1], ""))
-
+        # print("all func_sigs", [self.get_public_function(s[0], signature=s[1]).signature for s in func_sigs])
+        # print("all func_block", [hex(self.get_public_function(s[0], signature=s[1]).start_block.entry) for s in func_sigs])
+        # print("all func_block_end", [hex(self.get_public_function(s[0], signature=s[1]).end_block.entry) for s in func_sigs])
+        # print("all func_block_body", [[hex(b.entry) for b in self.get_public_function(s[0], signature=s[1]).body] for s in func_sigs])
         return [self.get_public_function(s[0], signature=s[1]) for s in func_sigs]
 
     def get_public_function(self, block: tac_cfg.TACBasicBlock,

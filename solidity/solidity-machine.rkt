@@ -3,7 +3,6 @@
 (require "../machine.rkt" "../special.rkt")
 
 (provide solidity-machine%  (all-defined-out))
-
 ;;;;;;;;;;;;;;;;;;;;; program state macro ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; This is just for convenience.
 (define-syntax-rule
@@ -28,6 +27,17 @@
 (define-syntax-rule (set-progstate-balance! x v) (vector-set! x 6 v))
 (define-syntax-rule (set-progstate-summary! x v) (vector-set! x 7 v))
 
+
+(define contract-out-str `(
+                      "GAS"
+                      "ADDRESS"
+                      "TIMESTAMP"
+                      "NUMBER"
+                      "CODESIZE"
+                      "GASPRICE"
+                      "GASLIMIT"
+                      "DIFFICULTY"
+                      "COINBASE"))
 
 (define solidity-machine%
   (class machine%
@@ -54,7 +64,7 @@
       (progstate (for/vector ([i config]) 'reg)
                  (get-memory-type)
                  `cost  ; gas consumption
-                 (for/vector ([i 9]) 'contract)
+                 (for/vector ([i (length contract-out-str)]) 'contract)
                  ;; (for/vector ([i 40]) 'storage)
                  (list)
                  (for/vector ([i 10]) 'sink)
@@ -83,7 +93,7 @@
 
 
     ; Contract and transaction-related data structures.
-    ; 0: CALLVALUE | 1: CALLDATASIZE
+    ; 0: CALLVALUE
     (define-progstate-type
       'contract 
       #:get (lambda (state arg) (vector-ref (progstate-contract state) arg))
@@ -115,236 +125,10 @@
       #:get (lambda (state arg) (vector-ref (progstate-sink state) arg))
       #:set (lambda (state arg val) (vector-set! (progstate-sink state) arg val)))
 
-    ;;;;;;;;;;;;;;;;;;;;; instruction classes ;;;;;;;;;;;;;;;;;;;;;;;;
-    (define-arg-type 'reg (lambda (config) (range config)))
-    (define-arg-type 'const (lambda (config) '(0 2 4 6 8)))
-    (define-arg-type 'bit (lambda (config) '(0 1)))
-    ;; try more values for const than for bit
-    ; (define-arg-type
-    ;   ? ;; define argument type
-    ;   )
 
     ;; Inform GreenThumb how many opcodes there are in one instruction. 
     (init-machine-description 1)
     
-    (define-instruction-class 'nop '(nop))
-
-    ;; An example of an instruction that takes two input registers
-    ;; and update one output register
-    (define-instruction-class 'rrr-commute '(add)
-      #:args '(reg reg reg) #:ins '(1 2) #:outs '(0) #:commute '(1 . 2))
-
-    ;; An example of an instruction that takes an input register and a constant
-    ;; and update one output register.
-    ;; Notice that opcodes in different classes can't have the same name.
-    (define-instruction-class 'rri '(add#)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rii '(add##)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rrr-commute '(mod)
-      #:args '(reg reg reg) #:ins '(1 2) #:outs '(0) #:commute '(1 . 2))
-    (define-instruction-class 'rri '(mod#)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rii '(mod##)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rri '(byte#)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rrr-commute '(xor)
-      #:args '(reg reg reg) #:ins '(1 2) #:outs '(0) #:commute '(1 . 2))
-    (define-instruction-class 'rri '(xor#)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rii '(xor##)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    ;; An example of an instruction that takes an input register and a shift constant
-    ;; and update one output register
-    (define-instruction-class 'rrb '(shl#)
-      #:args '(reg reg bit) #:ins '(1) #:outs '(0))
-
-    ;; An example of an instruction that accesses memory
-    (define-instruction-class 'load '(load)
-      #:args '(reg reg) #:ins (list 1 (get-memory-type)) #:outs '(0))
-
-    ;; An example of an instruction that updates memory
-    (define-instruction-class 'store '(store)
-      #:args '(reg reg) #:ins '(0 1) #:outs (list (get-memory-type)))
-
-    (define-instruction-class 'store-set '(store-set)
-      #:args '(reg reg) #:ins '(0 1) #:outs (list (get-memory-type)))
-
-        ;; An example of an instruction that accesses storage
-    (define-instruction-class 'sload '(sload)
-      #:args '(reg reg) #:ins (list 1 (get-memory-type)) #:outs '(0))
-
-    ;; An example of an instruction that updates storage
-    (define-instruction-class 'sstore '(sstore)
-      #:args '(reg reg) #:ins '(0 1) #:outs (list (get-memory-type)))
-   
-    (define-instruction-class 'iszero '(iszero)
-      #:args '(reg reg) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'iszero# '(iszero#)
-      #:args '(reg reg) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'snot '(snot)
-      #:args '(reg reg) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'snot# '(snot#)
-      #:args '(reg reg) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'jumpi '(jumpi)
-      #:args '(const reg) #:ins '(1) #:outs '(0))
-    (define-instruction-class 'jumpi## '(jumpi##)
-      #:args '(const reg) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'jump '(jump)
-      #:args '(const reg) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'throw '(throw)
-      #:args '(const reg) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'jump## '(jump##)
-      #:args '(const reg) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'extcodesize '(extcodesize)
-      #:args '(const reg) #:ins '(1) #:outs '(0))
-    (define-instruction-class 'extcodesize# '(extcodesize#)
-      #:args '(const reg) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'selfdestruct '(selfdestruct)
-      #:args '(const reg) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'eq '(eq)
-      #:args '(reg const) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'eq '(eq#)
-      #:args '(reg const) #:ins '(1) #:outs '(0))
-
-    ; (define-instruction-class 'calldataload '(calldataload)
-    ;   #:args '(reg const) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'calldataload '(calldataload)
-      #:args '(reg reg) #:ins (list 1 (get-memory-type)) #:outs '(0))
-
-    (define-instruction-class 'rri '(sub)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rri '(sub#)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rri '(sub##)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rri '(div)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rrr '(div)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rri '(div#)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rii '(div##)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rrr '(mul)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rri '(mul#)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rii '(mul##)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rri '(sha3)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rri '(sha3#)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rri '(sha3##)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rrr '(lt)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rri '(lt#)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rir '(lt##)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rii '(lt###)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rri '(gt)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rri '(gt#)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rir '(gt##)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rii '(gt###)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rrr '(and)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rri '(and#)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rii '(and##)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rrr '(or)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rri '(or#)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rii '(or##)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rrr '(exp)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rri '(exp#)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rii '(exp##)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rir '(eqcmp)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'rrr '(eqcmp#)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-    (define-instruction-class 'rri '(eqcmp##)
-      #:args '(reg reg const) #:ins '(1 2) #:outs '(0))
-
-    (define-instruction-class 'call '(call) 
-      #:args '(reg const) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'codecopy '(codecopy) 
-      #:args '(reg const) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'delegatecall '(delegatecall) 
-      #:args '(reg const) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'create '(create) ;;FIXME
-      #:args '(reg const) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'balance '(balance) 
-      #:args '(reg const) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'balance# '(balance#) 
-      #:args '(reg const) #:ins '(1) #:outs '(0))
-
-
-    (define-instruction-class 'blockhash '(blockhash) 
-      #:args '(reg const) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'blockhash# '(blockhash#) 
-      #:args '(reg const) #:ins '(1) #:outs '(0))
-
-    (define-instruction-class 'create# '(create#) ;;FIXME
-      #:args '(reg const) #:ins '(1) #:outs '(0))
-    ; (define-instruction-class
-    ;   ? ;; define instruction class
-    ;   )
 
     (finalize-machine-description)
 

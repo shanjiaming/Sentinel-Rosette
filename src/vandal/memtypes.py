@@ -98,6 +98,9 @@ class Variable(ssle, Location):
         """
 
         # Make sure the input values are not out of range.
+        # if values and len(values) > 1:
+        #     print("values", values)
+        #     breakpoint()
         mod = [] if values is None else [v % self.CARDINALITY for v in values]
         super().__init__(value=mod)
         self.name = name
@@ -160,7 +163,10 @@ class Variable(ssle, Location):
             return self.identifier
         if self.is_const:
             return hex(self.const_value)
-        val_str = ", ".join(hex(val) for val in sorted(self.value))
+        # breakpoint()
+        val_str = "; ".join(hex(val) for val in sorted(self.value))
+        print("val_str", "{{{}}}".format(val_str))
+        
         return "{{{}}}".format(val_str)
 
     def __repr__(self):
@@ -391,6 +397,20 @@ class Variable(ssle, Location):
         """Return the b'th byte of v."""
         return (v >> ((cls.SIZE - b) * 8)) & 0xFF
 
+    @classmethod
+    def SHL(cls, b: int, v: int) -> int:
+        """Bitwise shift left."""
+        return v << b
+
+    @classmethod
+    def SHR(cls, b: int, v: int) -> int:
+        """Bitwise shift right."""
+        return v >> b
+
+    @classmethod
+    def SAR(cls, b: int, v: int) -> int:
+        """Arithmetic shift right."""
+        return cls.twos_comp(v) >> b
 
 class MetaVariable(Variable):
     """A Variable to stand in for Variables."""
@@ -402,6 +422,9 @@ class MetaVariable(Variable):
           payload: some information to carry along with this MetaVariable.
           def_sites: a set of locations where this variable was possibly defined.
         """
+        # if self._bottom_val() and len(self._bottom_val()) > 1:
+        #     print("bottom_val", self._bottom_val())
+        #     breakpoint()
         super().__init__(values=self._bottom_val(), name=name, def_sites=def_sites)
 
         self.value = self._top_val()
@@ -419,7 +442,7 @@ class MetaVariable(Variable):
         return type(self)(self.name,
                           self.payload,
                           copy.deepcopy(self.def_sites, memodict))
-
+from watchpoints import watch
 
 class VariableStack(LatticeElement):
     """
@@ -510,11 +533,17 @@ class VariableStack(LatticeElement):
     def peek(self, n: int = 0) -> Variable:
         """Return the n'th element from the top without popping anything."""
         if n >= len(self):
+            # TODO: because I need to pick from whole rosette global stack instead of just empty pop. I don't know how a code can go to this line.
+            # print("n", n)
+            # print("len(self)", len(self))
+            # print("self.empty_pops", self.empty_pops)
+            # assert False
             return self.__new_metavar(n - len(self) + self.empty_pops)
         return self.value[-(n + 1)]
 
     def push(self, var: Variable) -> None:
         """Push a variable to the stack."""
+        # print("pushing", str(var), "to length", len(self.value))
         if len(self.value) < self.max_size:
             self.value.append(var)
 
@@ -524,6 +553,12 @@ class VariableStack(LatticeElement):
         generate a variable from past the bottom.
         """
         if len(self.value):
+            # print("popping", str(self.value[-1]), "from length", len(self.value))
+            # if str(self.value[-1]) == "V16" or str(self.value[-1]) == "V18":
+                # breakpoint()
+                
+                # if str(self.value[-1]) == "V16":
+                    # watch(self.value)
             return self.value.pop()
         else:
             self.empty_pops += 1
@@ -542,7 +577,9 @@ class VariableStack(LatticeElement):
         Pop and return n items from the stack.
         First-popped elements inhabit low indices.
         """
-        return [self.pop() for _ in range(n)]
+        a = [self.pop() for _ in range(n)]
+        # print("self.value", self.value)
+        return a
 
     def dup(self, n: int) -> None:
         """Place a copy of stack[n-1] on the top of the stack."""

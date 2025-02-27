@@ -68,7 +68,7 @@ class OpCode:
 
     def is_push(self) -> bool:
         """Predicate: opcode is a push operation."""
-        return PUSH1.code <= self.code <= PUSH32.code
+        return PUSH0.code <= self.code <= PUSH32.code
 
     def is_swap(self) -> bool:
         """Predicate: opcode is a swap operation."""
@@ -91,7 +91,7 @@ class OpCode:
     def is_arithmetic(self) -> bool:
         """Predicate: opcode's result can be calculated from its inputs alone."""
         return (ADD.code <= self.code <= SIGNEXTEND.code) or \
-               (LT.code <= self.code <= BYTE.code)
+               (LT.code <= self.code <= SAR.code)
 
     def is_memory(self) -> bool:
         """Predicate: opcode operates on memory"""
@@ -166,6 +166,9 @@ OR = OpCode("OR", 0x17, 2, 1)
 XOR = OpCode("XOR", 0x18, 2, 1)
 NOT = OpCode("NOT", 0x19, 1, 1)
 BYTE = OpCode("BYTE", 0x1a, 2, 1)
+SHL = OpCode("SHL", 0x1b, 2, 1) # for block.number >= CONSTANTINOPLE_FORK_BLKNUM
+SHR = OpCode("SHR", 0x1c, 2, 1) # for block.number >= CONSTANTINOPLE_FORK_BLKNUM
+SAR = OpCode("SAR", 0x1d, 2, 1) # for block.number >= CONSTANTINOPLE_FORK_BLKNUM
 
 SHA3 = OpCode("SHA3", 0x20, 2, 1)
 
@@ -183,6 +186,9 @@ CODECOPY = OpCode("CODECOPY", 0x39, 3, 0)
 GASPRICE = OpCode("GASPRICE", 0x3a, 0, 1)
 EXTCODESIZE = OpCode("EXTCODESIZE", 0x3b, 1, 1)
 EXTCODECOPY = OpCode("EXTCODECOPY", 0x3c, 4, 0)
+RETURNDATASIZE = OpCode("RETURNDATASIZE", 0x3d, 0, 1) # for block.number >= BYZANTIUM_FORK_BLKNUM
+RETURNDATACOPY = OpCode("RETURNDATACOPY", 0x3e, 3, 0) # for block.number >= BYZANTIUM_FORK_BLKNUM
+EXTCODEHASH = OpCode("EXTCODEHASH", 0x3f, 1, 1) # for block.number >= CONSTANTINOPLE_FORK_BLKNUM
 
 # Block Information
 BLOCKHASH = OpCode("BLOCKHASH", 0x40, 1, 1)
@@ -191,6 +197,11 @@ TIMESTAMP = OpCode("TIMESTAMP", 0x42, 0, 1)
 NUMBER = OpCode("NUMBER", 0x43, 0, 1)
 DIFFICULTY = OpCode("DIFFICULTY", 0x44, 0, 1)
 GASLIMIT = OpCode("GASLIMIT", 0x45, 0, 1)
+CHAINID = OpCode("CHAINID", 0x46, 0, 1)
+SELFBALANCE = OpCode("SELFBALANCE", 0x47, 0, 1)
+BASEFEE = OpCode("BASEFEE", 0x48, 0, 1)
+BLOBHASH = OpCode("BLOBHASH", 0x49, 1, 1)
+BLOBBASEFEE = OpCode("BLOBBASEFEE", 0x4a, 1, 1)
 
 # Stack, Memory, Storage, Flow
 POP = OpCode("POP", 0x50, 1, 0)
@@ -206,6 +217,7 @@ MSIZE = OpCode("MSIZE", 0x59, 0, 1)
 GAS = OpCode("GAS", 0x5a, 0, 1)
 JUMPDEST = OpCode("JUMPDEST", 0x5b, 0, 0)
 
+PUSH0 = OpCode("PUSH0", 0x5f, 0, 1)
 PUSH1 = OpCode("PUSH1", 0x60, 0, 1)
 PUSH2 = OpCode("PUSH2", 0x61, 0, 1)
 PUSH3 = OpCode("PUSH3", 0x62, 0, 1)
@@ -286,14 +298,11 @@ CALL = OpCode("CALL", 0xf1, 7, 1)
 CALLCODE = OpCode("CALLCODE", 0xf2, 7, 1)
 RETURN = OpCode("RETURN", 0xf3, 2, 0)
 DELEGATECALL = OpCode("DELEGATECALL", 0xf4, 6, 1)
+CREATE2 = OpCode("CREATE2", 0xf5, 4, 1) # for block.number >= CONSTANTINOPLE_FORK_BLKNUM
+STATICCALL = OpCode("STATICCALL", 0xfa, 6, 1) # for block.number >= BYZANTIUM_FORK_BLKNUM
+REVERT = OpCode("REVERT", 0xfd, 2, 0) # for block.number >= BYZANTIUM_FORK_BLKNUM
 INVALID = OpCode("INVALID", 0xfe, 0, 0)
 SELFDESTRUCT = OpCode("SELFDESTRUCT", 0xff, 1, 0)
-
-# New Byzantinium OpCodes for block.number >= BYZANTIUM_FORK_BLKNUM
-REVERT = OpCode("REVERT", 0xfd, 2, 0)
-RETURNDATASIZE = OpCode("RETURNDATASIZE", 0x3d, 0, 1)
-RETURNDATACOPY = OpCode("RETURNDATACOPY", 0x3e, 3, 0)
-STATICCALL = OpCode("STATICCALL", 0xfa, 6, 1)
 
 # TAC Operations
 # These are not EVM opcodes, but they are used by the three-address code

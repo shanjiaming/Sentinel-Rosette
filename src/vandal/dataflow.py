@@ -52,18 +52,17 @@ def analyse_graph(cfg: tac_cfg.TACGraph) -> Dict[str, Any]:
     """
 
     logging.info("Beginning dataflow analysis loop.")
-
     anal_results = {}
     if settings.analytics:
         anal_results["bailout"] = False
     bail_time = settings.bailout_seconds
-    start_clock = time.clock()
+    start_clock = time.process_time()
     i = 0
 
     # Perform the stack analysis until we reach a fixed-point or a max is
     # exceeded. We alternately infer new edges that can be inferred.
     while i != settings.max_iterations:
-        loop_start_clock = time.clock()
+        loop_start_clock = time.process_time()
         i += 1
         modified = stack_analysis(cfg)
         modified |= cfg.clone_ambiguous_jump_blocks()
@@ -72,8 +71,8 @@ def analyse_graph(cfg: tac_cfg.TACGraph) -> Dict[str, Any]:
 
         # If the next analysis step will require more than the remaining time
         # or we have already exceeded our time budget, break out.
-        loop_time = time.clock() - loop_start_clock
-        elapsed = time.clock() - start_clock
+        loop_time = time.process_time() - loop_start_clock
+        elapsed = time.process_time() - start_clock
         if bail_time >= 0:
             if elapsed > bail_time or 2 * loop_time > bail_time - elapsed:
                 logging.info("Bailed out after %s seconds", elapsed)
@@ -170,7 +169,7 @@ def analyse_graph(cfg: tac_cfg.TACGraph) -> Dict[str, Any]:
             avg_clone = sum([v[2] for v in block_dict.values()]) / len(block_dict)
             if avg_clone > 0:
                 logging.info("Procedure cloning occurred during analysis; "
-                             "blocks were cloned on average of %.2f times each.",
+                             "blocks were cloned an average of %.2f times each.",
                              avg_clone)
 
     return anal_results
@@ -222,8 +221,21 @@ def stack_analysis(cfg: tac_cfg.TACGraph) -> bool:
     settings.mutate_jumps = False
     settings.generate_throws = False
 
+    # the fixpoint analysis might run for a time > bailout, causing the timeout to be ignored
+    bail_time = settings.bailout_seconds 
+    start_clock = time.process_time()
+    counter = 0 
+
     # Churn until we reach a fixed point.
     while queue:
+
+        # check if we are running over time budget
+        counter += 1 
+        if counter % 1000 == 0 and bail_time >= 0:
+            elapsed = time.process_time() - start_clock
+            if elapsed > bail_time:
+                break
+
         curr_block = queue.pop(0)
 
         # If there was no change to the entry stack, then there will be no
@@ -348,7 +360,10 @@ def stack_size_analysis(cfg: cfg.ControlFlowGraph):
         # if it's a TAC Block, then there's no need to go through the
         # EVM operations again.
         if isinstance(block, tac_cfg.TACBasicBlock):
-            return len(block.stack_adds) - block.stack_pops
+            
+            stack_pops = (block.delta_stack.empty_pops)
+            stack_adds = (len(block.delta_stack))
+            return stack_pops - stack_adds
 
         delta = 0
 

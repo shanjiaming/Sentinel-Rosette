@@ -1,14 +1,14 @@
 ; #lang racket
 #lang s-exp rosette
 
-(require "inst.rkt" "memory-rosette.rkt" "queue-rosette.rkt"
+(require "inst.rkt" "memory-rosette-my.rkt" "queue-rosette.rkt"
          "memory-racket.rkt" "queue-racket.rkt" "special.rkt")
 (provide (all-defined-out))
 
 (define debug #f)
-(struct instclass (opcodes pool args ins outs commute) #:mutable)
-(struct argtype (validfunc valid statetype) #:mutable)
-(struct statetype (get set min max const structure))
+(struct instclass (opcodes pool args ins outs commute) #:mutable #:transparent)
+(struct argtype (validfunc valid statetype) #:mutable #:transparent)
+(struct statetype (get set min max const structure) #:transparent)
 
 (define machine%
   (class object%
@@ -44,7 +44,7 @@
 
      ;; Search configuration
      ; window-size
-     ; set-config get-config
+     set-config get-config
      get-constructor
      
      ;; Search helper functions
@@ -256,7 +256,7 @@
                    (hash-set! vector2scalar v (cons s vector-width))))
         ])
       
-      ;;(pretty-display (format "[DEFINE] class=~a | args=~a ins=~a outs=~a" name args ins outs))
+      (pretty-display (format "[DEFINE] class=~a | args=~a ins=~a outs=~a" name args ins outs))
       )
 
     (define (check-max-number-of-args args)

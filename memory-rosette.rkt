@@ -1,7 +1,8 @@
-#lang s-exp rosette
+#lang rosette
 
 (require "special.rkt" "memory-racket.rkt" "ops-rosette.rkt")
-(provide memory-rosette% init-memory-size increase-memory-size finalize-memory-size)
+;;; (provide memory-rosette% init-memory-size increase-memory-size finalize-memory-size)
+(provide (all-defined-out))
 
 (define memory-size 1)
 (define (init-memory-size)
@@ -14,7 +15,8 @@
   (set! memory-size (add1 memory-size))
   (pretty-display (format "Finalize memory size ~a" memory-size))
   )
-
+; not handle cross boundary not that good.
+; cross boundary with only concrete is totally fine. But if symbolic, it will be time consuming, so don't implement that.
 
 ;; Mask method which should only be public for object of memory-racket%
 (define-local-member-name lookup-init)
@@ -73,6 +75,7 @@
            [get-fresh-val get-fresh-val]))
 
     (define (init-new-val addr)
+      (printf "MEMORY-ROSETTE: init-new-val: ~a\n" addr)
       (define (loop index)
         (if (pair? (vector-ref init index))
             (loop (add1 index))
@@ -82,7 +85,9 @@
       (loop 0))
 
     (define (update-new-loc addr val)
+      (printf "MEMORY-ROSETTE: update-new-loc: ~a ~a\n" addr val)
       (define (loop index)
+        (printf "MEMORY-ROSETTE: update-new-loc: loop: ~a\n" index)
         (if (pair? (vector-ref update index))
             (loop (add1 index))
             (vector-set! update index (cons addr val))))
@@ -90,6 +95,7 @@
 
     ;;;;;;;;;;;;;;;;;;;; lookup & update ;;;;;;;;;;;;;;;;;;;;
     (define (lookup storage addr)
+      (printf "MEMORY-ROSETTE: lookup: ~a\n" addr)
       (define (loop index)
         (and (< index (vector-length storage))
              (let ([pair (vector-ref storage index)])
@@ -105,6 +111,7 @@
     (define/public (lookup-update addr) (lookup update addr))
 
     (define (modify storage addr val)
+      (printf "MEMORY-ROSETTE: modify: ~a ~a\n" addr val)
       (define (loop index)
         (and (< index (vector-length storage))
              (let ([pair (vector-ref storage index)])
@@ -157,7 +164,7 @@
 
 (define (test)
   (set! memory-size 2)
-  (define func (lambda () (define-symbolic* val number?) val))
+  (define func (lambda () (define-symbolic* val (bitvector 256)) val))
   (define mem (new memory-rosette% [get-fresh-val func]))
   (assert (term? (send mem load 9)) "mem: load 9 = sym")
   (assert (term? (send mem load 6)) "mem: load 6 = sym")

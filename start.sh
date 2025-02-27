@@ -1,0 +1,1 @@
+anvil --steps-tracing -vvvvv --fork-url https://eth-mainnet.g.alchemy.com/v2/P-x0L9coIqzuhfI091DXitR7BzYbABFA --order fees --fork-block-number 21583854 --port 8545 --host 127.0.0.1 --allow-origin \"*\" --chain-id 1 --no-storage-caching --no-mining --timestamp 0 --disable-block-gas-limit --block-base-fee-per-gas 0 --transaction-block-keeper 20

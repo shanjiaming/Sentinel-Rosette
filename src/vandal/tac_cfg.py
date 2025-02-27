@@ -34,6 +34,8 @@ import copy
 import logging
 import typing as t
 
+# import networkx as nx
+
 import src.vandal.blockparse as blockparse
 import src.vandal.cfg as cfg
 import src.vandal.evm_cfg as evm_cfg
@@ -70,7 +72,11 @@ class TACGraph(cfg.ControlFlowGraph):
         # Convert the input EVM blocks to TAC blocks.
         destack = Destackifier()
 
-        self.blocks = [destack.convert_block(b) for b in evm_blocks]
+        self.blocks = []
+        for b in evm_blocks:
+            block, old_stack = destack.convert_block(b)
+            block.remaining_stack = old_stack
+            self.blocks.append(block)
         """The sequence of TACBasicBlocks contained in this graph."""
         for b in self.blocks:
             b.cfg = self
@@ -152,6 +158,72 @@ class TACGraph(cfg.ControlFlowGraph):
             for succ in block.succs:
                 edges.append((block.tac_ops[-1], succ.tac_ops[0]))
         return edges
+
+    # def nx_graph(self, op_edges=False) -> nx.DiGraph:
+    #     """
+    #     Return a networkx representation of this CFG.
+    #     Nodes are labelled by their corresponding block's identifier.
+
+    #     Args:
+    #       op_edges: if true, return edges between instructions rather than blocks.
+    #     """
+    #     g = nx.DiGraph()
+
+    #     if op_edges:
+    #         g.add_nodes_from(hex(op.pc) for op in self.tac_ops)
+    #         g.add_edges_from((hex(p.pc), hex(s.pc)) for p, s in self.op_edge_list())
+    #         g.add_edges_from((hex(block.last_op.pc), UNRES_DEST)
+    #                          for block in self.blocks if block.has_unresolved_jump)
+    #     else:
+    #         g.add_nodes_from(b.ident() for b in self.blocks)
+    #         g.add_edges_from((p.ident(), s.ident()) for p, s in self.edge_list())
+    #         g.add_edges_from((block.ident(), UNRES_DEST) for block in self.blocks
+    #                          if block.has_unresolved_jump)
+    #     return g
+
+    # def immediate_dominators(self, post: bool = False, op_edges=False) \
+    #     -> t.Dict[str, str]:
+    #     """
+    #     Return the immediate dominator mapping of this graph.
+    #     Each node is mapped to its unique immediately dominating node.
+    #     This mapping defines a tree with the root being its own immediate dominator.
+
+    #     Args:
+    #       post: if true, return post-dominators instead, with an auxiliary node
+    #               END with edges from all terminal nodes in the CFG.
+    #       op_edges: if true, return edges between instructions rather than blocks.
+
+    #     Returns:
+    #       dict: str -> str, maps from node identifiers to node identifiers.
+    #     """
+    #     nx_graph = self.nx_graph(op_edges).reverse() if post \
+    #         else self.nx_graph(op_edges)
+
+    #     # Logic here is not quite robust when op_edges is true, but correct
+    #     # whenever there is a unique entry node, and no graph-splitting.
+    #     start = POSTDOM_END_NODE if post else self.root.ident()
+
+    #     if post:
+    #         if op_edges:
+    #             terminal_edges = [(POSTDOM_END_NODE, hex(op.pc))
+    #                               for op in self.terminal_ops]
+    #         else:
+    #             terminal_edges = [(POSTDOM_END_NODE, op.block.ident())
+    #                               for op in self.terminal_ops]
+    #         nx_graph.add_node(POSTDOM_END_NODE)
+    #         nx_graph.add_edges_from(terminal_edges)
+
+    #     doms = nx.algorithms.dominance.immediate_dominators(nx_graph, start)
+    #     idents = [b.ident() for b in self.blocks]
+
+    #     if not op_edges:
+    #         for d in [d for d in doms if d not in idents]:
+    #             del doms[d]
+
+    #     # TODO: determine whether to remove non-terminal END-postdominators
+    #     #       and turn terminal ones into self-postdominators
+
+    #     return doms
 
     def dominators(self, post: bool = False, op_edges=False) \
         -> t.Dict[str, t.Set[str]]:
@@ -791,6 +863,8 @@ class TACBasicBlock(evm_cfg.EVMBasicBlock):
         self.exit_stack = mem.VariableStack()
         """Holds the complete stack state after execution of the block."""
 
+        self.remaining_stack = mem.VariableStack()
+        """Holds the remaining stack state after execution of the block."""
         self.symbolic_overflow = False
         """
         Indicates whether a symbolic stack overflow has occurred in dataflow
@@ -883,7 +957,7 @@ class TACBasicBlock(evm_cfg.EVMBasicBlock):
         """
         old_stack = self.entry_stack
         pred_stacks = [pred.exit_stack for pred in self.preds]
-        self.entry_stack = mem.VariableStack.join_all(pred_stacks)
+        self.entry_stack = mem.VariableStack()#mem.VariableStack.join_all(pred_stacks)
         self.entry_stack.set_max_size(old_stack.max_size)
         self.entry_stack.metafy()
 
@@ -923,6 +997,9 @@ class TACBasicBlock(evm_cfg.EVMBasicBlock):
             if isinstance(var, mem.MetaVariable):
                 # Here we know the stack is full enough, given we've already checked it,
                 # but we'll get a MetaVariable if we try grabbing something off the end.
+                # print("var", var)
+                # op_seq = "\n".join(str(op) for op in self.tac_ops)
+                # print(op_seq)
                 metavar_map[var] = exit_stack.peek(var.payload)
 
         # Construct the exit stack itself.
@@ -950,6 +1027,7 @@ class TACBasicBlock(evm_cfg.EVMBasicBlock):
                         # If the required argument is past the end, don't replace the metavariable
                         # as we would thereby lose information.
                         if stack_var.payload < len(self.entry_stack):
+                            
                             op.args[i].var = self.entry_stack.peek(stack_var.payload)
 
     def hook_up_def_site_jumps(self) -> None:
@@ -1368,6 +1446,8 @@ class Destackifier:
         self.__fresh_init(evm_block)
 
         for op in evm_block.evm_ops:
+            # print("op", op.opcode)
+            # print("stack", self.stack)
             self.__handle_evm_op(op)
 
         entry = evm_block.evm_ops[0].pc if len(evm_block.evm_ops) > 0 else None
@@ -1377,14 +1457,14 @@ class Destackifier:
         # If the block is empty, append a NOP before continuing.
         if len(self.ops) == 0:
             self.ops.append(TACOp(opcodes.NOP, [], entry))
-
+        ssc = self.stack.copy()
         new_block = TACBasicBlock(entry, exit, self.ops, evm_block.evm_ops,
                                   self.stack)
 
         # Link up new ops and def sites to the block that contains them.
         new_block.reset_block_refs()
 
-        return new_block
+        return new_block, ssc
 
     def __handle_evm_op(self, op: evm_cfg.EVMOp) -> None:
         """
@@ -1392,7 +1472,11 @@ class Destackifier:
         appending it to the current TAC sequence, and manipulate the stack in any
         needful way.
         """
-
+        # print("op", op.opcode)
+        # print("stack.value", self.stack.value)
+        # FLAG = (0x35 <= op.pc <= 0x6a)
+        # if FLAG:
+            # print("op", op)
         if op.opcode.is_swap():
             self.stack.swap(op.opcode.pop)
         elif op.opcode.is_dup():
@@ -1401,7 +1485,9 @@ class Destackifier:
             self.stack.pop()
         else:
             self.__gen_instruction(op)
-
+        # if FLAG:
+            # print("self.stack.empty_pops", self.stack.empty_pops)
+        # print("stack.value end", self.stack.value)
     def __gen_instruction(self, op: evm_cfg.EVMOp) -> None:
         """
         Given a line, generate its corresponding TAC operation,
@@ -1456,3 +1542,4 @@ class Destackifier:
         if new_var is not None:
             self.stack.push(new_var)
         self.ops.append(inst)
+        # print("inst", inst , "add to", hex(self.block_entry))

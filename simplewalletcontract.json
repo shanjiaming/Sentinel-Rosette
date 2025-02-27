@@ -1,0 +1,565 @@
+{
+    "name": "ControlFlowGraph",
+    "root": "0x0",
+    "public_methods": [],
+    "private_methods": [],
+    "blocks": [
+        {
+            "address": "0x0",
+            "insts": [
+                "0x0: V0 = 0x80",
+                "0x2: V1 = 0x40",
+                "0x4: M[0x40] = 0x80",
+                "0x5: V2 = CALLVALUE",
+                "0x7: V3 = ISZERO V2",
+                "0x8: V4 = 0xe",
+                "0xa: JUMPI 0xe V3"
+            ],
+            "preds": [],
+            "succs": [
+                "0xe",
+                "0xb"
+            ]
+        },
+        {
+            "address": "0xb",
+            "insts": [
+                "0xb: MISSING 0x5f"
+            ],
+            "preds": [
+                "0x0"
+            ],
+            "succs": []
+        },
+        {
+            "address": "0xe",
+            "insts": [
+                "0xe: JUMPDEST ",
+                "0x10: V5 = 0x29c",
+                "0x14: V6 = 0x1c",
+                "0x17: MISSING 0x5f"
+            ],
+            "preds": [
+                "0x0"
+            ],
+            "succs": []
+        },
+        {
+            "address": "0x45",
+            "insts": [
+                "0x46: V22 = 0xe952f24e",
+                "0x4b: V23 = EQ 0xe952f24e V18",
+                "0x4c: V24 = 0x68",
+                "0x4f: THROWI V23"
+            ],
+            "preds": [
+                "0x35"
+            ],
+            "succs": [
+                "0x50"
+            ]
+        },
+        {
+            "address": "0xc",
+            "insts": [
+                "0xc: MISSING 0x5f",
+                "0xd: REVERT S0 S1"
+            ],
+            "preds": [],
+            "succs": []
+        },
+        {
+            "address": "0x18",
+            "insts": [
+                "0x18: CODECOPY S0 S1 S2",
+                "0x19: MISSING 0x5f",
+                "0x1a: RETURN S0 S1",
+                "0x1b: INVALID ",
+                "0x1c: V7 = 0x80",
+                "0x1e: V8 = 0x40",
+                "0x20: M[0x40] = 0x80",
+                "0x21: V9 = CALLVALUE",
+                "0x23: V10 = ISZERO V9",
+                "0x24: V11 = 0xf",
+                "0x27: THROWI V10"
+            ],
+            "preds": [],
+            "succs": [
+                "0x28"
+            ]
+        },
+        {
+            "address": "0x28",
+            "insts": [
+                "0x28: MISSING 0x5f",
+                "0x29: MISSING 0x5f",
+                "0x2a: REVERT S0 S1",
+                "0x2b: JUMPDEST ",
+                "0x2d: V12 = 0x4",
+                "0x2f: V13 = CALLDATASIZE",
+                "0x30: V14 = LT V13 0x4",
+                "0x31: V15 = 0x34",
+                "0x34: THROWI V14"
+            ],
+            "preds": [
+                "0x18"
+            ],
+            "succs": [
+                "0x35"
+            ]
+        },
+        {
+            "address": "0x35",
+            "insts": [
+                "0x35: MISSING 0x5f",
+                "0x36: V16 = CALLDATALOAD S0",
+                "0x37: V17 = 0xe0",
+                "0x39: V18 = SHR 0xe0 V16",
+                "0x3b: V19 = 0x70a08231",
+                "0x40: V20 = EQ 0x70a08231 V18",
+                "0x41: V21 = 0x38",
+                "0x44: THROWI V20"
+            ],
+            "preds": [
+                "0x28"
+            ],
+            "succs": [
+                "0x45"
+            ]
+        },
+        {
+            "address": "0x50",
+            "insts": [
+                "0x50: JUMPDEST ",
+                "0x51: MISSING 0x5f",
+                "0x52: MISSING 0x5f",
+                "0x53: REVERT S0 S1",
+                "0x54: JUMPDEST ",
+                "0x55: V25 = 0x52",
+                "0x58: V26 = 0x4",
+                "0x5b: V27 = CALLDATASIZE",
+                "0x5c: V28 = SUB V27 0x4",
+                "0x5e: V29 = ADD 0x4 V28",
+                "0x60: V30 = 0x4d",
+                "0x65: V31 = 0x155",
+                "0x68: THROW ",
+                "0x69: JUMPDEST ",
+                "0x6a: V32 = 0x84",
+                "0x6d: JUMP 0x84"
+            ],
+            "preds": [
+                "0x45"
+            ],
+            "succs": [
+                "0x84"
+            ]
+        },
+        {
+            "address": "0x6e",
+            "insts": [
+                "0x6e: JUMPDEST ",
+                "0x6f: V33 = 0x40",
+                "0x71: V34 = M[0x40]",
+                "0x72: V35 = 0x5f",
+                "0x77: V36 = 0x198",
+                "0x7a: THROW ",
+                "0x7b: JUMPDEST ",
+                "0x7c: V37 = 0x40",
+                "0x7e: V38 = M[0x40]",
+                "0x81: V39 = SUB S0 V38",
+                "0x83: RETURN V38 V39"
+            ],
+            "preds": [],
+            "succs": []
+        },
+        {
+            "address": "0x84",
+            "insts": [
+                "0x84: JUMPDEST ",
+                "0x85: V40 = 0x82",
+                "0x88: V41 = 0x4",
+                "0x8b: V42 = CALLDATASIZE",
+                "0x8c: V43 = SUB V42 0x4",
+                "0x8e: V44 = ADD 0x4 V43",
+                "0x90: V45 = 0x7d",
+                "0x95: V46 = 0x1db",
+                "0x98: THROW ",
+                "0x99: JUMPDEST ",
+                "0x9a: V47 = 0x98",
+                "0x9d: THROW ",
+                "0x9e: JUMPDEST ",
+                "0x9f: STOP ",
+                "0xa0: JUMPDEST ",
+                "0xa1: MISSING 0x5f",
+                "0xa2: V48 = 0x20",
+                "0xa4: M[0x20] = S0",
+                "0xa6: MISSING 0x5f",
+                "0xa7: M[S0] = S1",
+                "0xa8: V49 = 0x40",
+                "0xaa: MISSING 0x5f",
+                "0xab: V50 = SHA3 S0 S1",
+                "0xac: MISSING 0x5f",
+                "0xb1: V51 = S[S1]",
+                "0xb3: JUMP S3",
+                "0xb4: JUMPDEST ",
+                "0xb5: V52 = 0xa",
+                "0xb8: V53 = LT S0 0xa",
+                "0xb9: V54 = ISZERO V53",
+                "0xba: V55 = 0xf4",
+                "0xbd: THROWI V54"
+            ],
+            "preds": [
+                "0x50"
+            ],
+            "succs": [
+                "0xbe"
+            ]
+        },
+        {
+            "address": "0xbe",
+            "insts": [
+                "0xbf: MISSING 0x5f",
+                "0xc0: MISSING 0x5f",
+                "0xc1: V56 = CALLER",
+                "0xc2: V57 = 0xffffffffffffffffffffffffffffffffffffffff",
+                "0xd7: V58 = AND 0xffffffffffffffffffffffffffffffffffffffff V56",
+                "0xd8: V59 = 0xffffffffffffffffffffffffffffffffffffffff",
+                "0xed: V60 = AND 0xffffffffffffffffffffffffffffffffffffffff V58",
+                "0xef: M[S0] = V60",
+                "0xf0: V61 = 0x20",
+                "0xf2: V62 = ADD 0x20 S0",
+                "0xf5: M[V62] = S1",
+                "0xf6: V63 = 0x20",
+                "0xf8: V64 = ADD 0x20 V62",
+                "0xf9: MISSING 0x5f",
+                "0xfa: V65 = SHA3 S0 S1",
+                "0xfb: MISSING 0x5f",
+                "0xfe: V66 = S[S1]",
+                "0xff: V67 = 0xec",
+                "0x104: V68 = 0x233",
+                "0x107: THROW ",
+                "0x108: JUMPDEST ",
+                "0x10e: S[S2] = S0"
+            ],
+            "preds": [
+                "0x84"
+            ],
+            "succs": [
+                "0x110"
+            ]
+        },
+        {
+            "address": "0x110",
+            "insts": [
+                "0x110: JUMPDEST ",
+                "0x112: JUMP S1",
+                "0x113: JUMPDEST ",
+                "0x114: MISSING 0x5f",
+                "0x115: MISSING 0x5f",
+                "0x116: REVERT S0 S1",
+                "0x117: JUMPDEST ",
+                "0x118: MISSING 0x5f",
+                "0x119: V69 = 0xffffffffffffffffffffffffffffffffffffffff",
+                "0x12f: V70 = AND S1 0xffffffffffffffffffffffffffffffffffffffff",
+                "0x135: JUMP S2",
+                "0x136: JUMPDEST ",
+                "0x137: MISSING 0x5f",
+                "0x138: V71 = 0x124",
+                "0x13c: V72 = 0xfb",
+                "0x13f: THROW ",
+                "0x140: JUMPDEST ",
+                "0x146: JUMP S3",
+                "0x147: JUMPDEST ",
+                "0x148: V73 = 0x134",
+                "0x14c: V74 = 0x11a",
+                "0x14f: THROW ",
+                "0x150: JUMPDEST ",
+                "0x152: V75 = EQ S1 S0",
+                "0x153: V76 = 0x13e",
+                "0x156: THROWI V75"
+            ],
+            "preds": [
+                "0xbe"
+            ],
+            "succs": [
+                "0x157"
+            ]
+        },
+        {
+            "address": "0x157",
+            "insts": [
+                "0x157: MISSING 0x5f",
+                "0x158: MISSING 0x5f",
+                "0x159: REVERT S0 S1",
+                "0x15a: JUMPDEST ",
+                "0x15c: JUMP S1",
+                "0x15d: JUMPDEST ",
+                "0x15e: MISSING 0x5f",
+                "0x160: V77 = CALLDATALOAD S1",
+                "0x163: V78 = 0x14f",
+                "0x167: V79 = 0x12b",
+                "0x16a: THROW ",
+                "0x16b: JUMPDEST ",
+                "0x170: JUMP S3",
+                "0x171: JUMPDEST ",
+                "0x172: MISSING 0x5f",
+                "0x173: V80 = 0x20",
+                "0x177: V81 = SUB S2 S1",
+                "0x178: V82 = SLT V81 0x20",
+                "0x179: V83 = ISZERO V82",
+                "0x17a: V84 = 0x16a",
+                "0x17d: THROWI V83"
+            ],
+            "preds": [
+                "0x110"
+            ],
+            "succs": [
+                "0x17e"
+            ]
+        },
+        {
+            "address": "0x17e",
+            "insts": [
+                "0x17e: V85 = 0x169",
+                "0x181: V86 = 0xf7",
+                "0x184: THROW ",
+                "0x185: JUMPDEST "
+            ],
+            "preds": [
+                "0x157"
+            ],
+            "succs": [
+                "0x186"
+            ]
+        },
+        {
+            "address": "0x186",
+            "insts": [
+                "0x186: JUMPDEST ",
+                "0x187: MISSING 0x5f",
+                "0x188: V87 = 0x177",
+                "0x18e: V88 = ADD S2 S0",
+                "0x18f: V89 = 0x141",
+                "0x192: THROW ",
+                "0x193: JUMPDEST ",
+                "0x19b: JUMP S5",
+                "0x19c: JUMPDEST ",
+                "0x19d: MISSING 0x5f",
+                "0x1a4: JUMP S2",
+                "0x1a5: JUMPDEST ",
+                "0x1a6: V90 = 0x192",
+                "0x1aa: V91 = 0x180",
+                "0x1ad: THROW ",
+                "0x1ae: JUMPDEST ",
+                "0x1b0: M[S2] = S0",
+                "0x1b3: JUMP S3",
+                "0x1b4: JUMPDEST ",
+                "0x1b5: MISSING 0x5f",
+                "0x1b6: V92 = 0x20",
+                "0x1b9: V93 = ADD S1 0x20",
+                "0x1bc: V94 = 0x1ab",
+                "0x1bf: MISSING 0x5f",
+                "0x1c1: V95 = ADD S3 S0",
+                "0x1c3: V96 = 0x189",
+                "0x1c6: THROW "
+            ],
+            "preds": [
+                "0x17e"
+            ],
+            "succs": []
+        },
+        {
+            "address": "0x1c7",
+            "insts": [
+                "0x1c7: JUMPDEST ",
+                "0x1cc: JUMP S3",
+                "0x1cd: JUMPDEST ",
+                "0x1ce: V97 = 0x1ba",
+                "0x1d2: V98 = 0x180",
+                "0x1d5: THROW ",
+                "0x1d6: JUMPDEST ",
+                "0x1d8: V99 = EQ S1 S0",
+                "0x1d9: V100 = 0x1c4",
+                "0x1dc: THROWI V99"
+            ],
+            "preds": [
+                "0x20c"
+            ],
+            "succs": [
+                "0x1dd"
+            ]
+        },
+        {
+            "address": "0x1dd",
+            "insts": [
+                "0x1dd: MISSING 0x5f",
+                "0x1de: MISSING 0x5f",
+                "0x1df: REVERT S0 S1",
+                "0x1e0: JUMPDEST ",
+                "0x1e2: JUMP S1",
+                "0x1e3: JUMPDEST ",
+                "0x1e4: MISSING 0x5f",
+                "0x1e6: V101 = CALLDATALOAD S1",
+                "0x1e9: V102 = 0x1d5",
+                "0x1ed: V103 = 0x1b1",
+                "0x1f0: THROW ",
+                "0x1f1: JUMPDEST ",
+                "0x1f6: JUMP S3",
+                "0x1f7: JUMPDEST ",
+                "0x1f8: MISSING 0x5f",
+                "0x1f9: V104 = 0x20",
+                "0x1fd: V105 = SUB S2 S1",
+                "0x1fe: V106 = SLT V105 0x20",
+                "0x1ff: V107 = ISZERO V106",
+                "0x200: V108 = 0x1f0",
+                "0x203: THROWI V107"
+            ],
+            "preds": [
+                "0x1c7"
+            ],
+            "succs": [
+                "0x204"
+            ]
+        },
+        {
+            "address": "0x204",
+            "insts": [
+                "0x204: V109 = 0x1ef",
+                "0x207: V110 = 0xf7",
+                "0x20a: THROW ",
+                "0x20b: JUMPDEST "
+            ],
+            "preds": [
+                "0x1dd"
+            ],
+            "succs": [
+                "0x20c"
+            ]
+        },
+        {
+            "address": "0x20c",
+            "insts": [
+                "0x20c: JUMPDEST ",
+                "0x20d: MISSING 0x5f",
+                "0x20e: V111 = 0x1fd",
+                "0x214: V112 = ADD S2 S0",
+                "0x215: V113 = 0x1c7",
+                "0x218: JUMP 0x1c7"
+            ],
+            "preds": [
+                "0x204"
+            ],
+            "succs": [
+                "0x1c7"
+            ]
+        },
+        {
+            "address": "0x219",
+            "insts": [
+                "0x219: JUMPDEST ",
+                "0x221: JUMP S5",
+                "0x222: JUMPDEST ",
+                "0x223: V114 = 0x4e487b7100000000000000000000000000000000000000000000000000000000",
+                "0x244: MISSING 0x5f",
+                "0x245: M[S0] = S1",
+                "0x246: V115 = 0x11",
+                "0x248: V116 = 0x4",
+                "0x24a: M[0x4] = 0x11",
+                "0x24b: V117 = 0x24",
+                "0x24d: MISSING 0x5f",
+                "0x24e: REVERT S0 S1",
+                "0x24f: JUMPDEST ",
+                "0x250: MISSING 0x5f",
+                "0x251: V118 = 0x23d",
+                "0x255: V119 = 0x180",
+                "0x258: THROW ",
+                "0x259: JUMPDEST ",
+                "0x25c: V120 = 0x248",
+                "0x260: V121 = 0x180",
+                "0x263: THROW ",
+                "0x264: JUMPDEST ",
+                "0x269: V122 = ADD S2 S0",
+                "0x26e: V123 = GT S2 V122",
+                "0x26f: V124 = ISZERO V123",
+                "0x270: V125 = 0x260",
+                "0x273: THROWI V124"
+            ],
+            "preds": [],
+            "succs": [
+                "0x274"
+            ]
+        },
+        {
+            "address": "0x274",
+            "insts": [
+                "0x274: V126 = 0x25f",
+                "0x277: V127 = 0x206",
+                "0x27a: THROW ",
+                "0x27b: JUMPDEST "
+            ],
+            "preds": [
+                "0x219"
+            ],
+            "succs": [
+                "0x27c"
+            ]
+        },
+        {
+            "address": "0x27c",
+            "insts": [
+                "0x27c: JUMPDEST ",
+                "0x281: JUMP S3",
+                "0x282: INVALID ",
+                "0x283: LOG S0 S1 S2 S3",
+                "0x284: V128 = 0x6970667358",
+                "0x28a: MISSING 0x22",
+                "0x28b: V129 = SLT S0 S1",
+                "0x28c: V130 = SHA3 V129 S2",
+                "0x28e: V131 = DIFFICULTY",
+                "0x290: MISSING 0xd4",
+                "0x291: MISSING 0xc6",
+                "0x292: MISSING 0xc1",
+                "0x293: V132 = NUMBER",
+                "0x294: MISSING 0x2e",
+                "0x295: MISSING 0x23",
+                "0x296: MISSING 0xb1",
+                "0x297: V133 = 0xa63a0de1be",
+                "0x29d: MISSING 0xbd",
+                "0x29e: MISSING 0xaa",
+                "0x2a0: MISSING 0xdb",
+                "0x2a2: MISSING 0xdb",
+                "0x2a3: V134 = ADD S0 S1",
+                "0x2a4: MISSING 0xa8",
+                "0x2a5: MISSING 0xfc",
+                "0x2a6: V135 = NOT S0",
+                "0x2a7: JUMPI V135 S1"
+            ],
+            "preds": [
+                "0x274"
+            ],
+            "succs": [
+                "0x2a8"
+            ]
+        },
+        {
+            "address": "0x2a8",
+            "insts": [
+                "0x2a8: MISSING 0xd6",
+                "0x2a9: V136 = NUMBER",
+                "0x2aa: MISSING 0xd6",
+                "0x2ab: CODECOPY S0 S1 S2",
+                "0x2ac: MISSING 0x4e",
+                "0x2ad: V137 = 0x736f6c6343",
+                "0x2b3: STOP ",
+                "0x2b4: V138 = ADDMOD S0 S1 S2",
+                "0x2b5: V139 = SHR V138 S3",
+                "0x2b6: STOP ",
+                "0x2b7: V140 = CALLER"
+            ],
+            "preds": [
+                "0x27c"
+            ],
+            "succs": []
+        }
+    ]
+}

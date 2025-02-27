@@ -1,0 +1,34 @@
+Semantic Equivalence & Execution Order:
+Ensure the code remains semantically equivalent and that the relative execution order is unchanged.
+
+Setup Before Attack:
+Execute the logic in the setup before the attack logic. In particular, the createSelectFork operation should be performed first, followed by recording the balance difference at the beginning and end of the attack.
+
+Simplify Code:
+Remove event emissions, logs, and comments. Simplify the code as much as possible.
+
+Handling vm:
+If vm is encountered, it is actually an address. For example:
+CheatCodes vm = CheatCodes(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
+Retain the usage of CheatCodes and its related operations, and add the corresponding interface.
+
+Interface Definition:
+Define any required interfaces yourself.
+
+No External References:
+Rewrite the code so that it does not reference any external files.
+
+Contract Name:
+Change the contract name to Exploit.
+
+Attack Function:
+The Exploit contract must include a function named run (either by renaming an existing function or creating a new one). The run() function should:
+
+Take no parameters.
+Return a uint256.
+Execute the attack and return the profit obtained by the attacker (i.e., the difference in balance before and after the attack).
+No Initialization:
+The rewritten code must not perform any initialization operations, including assigning values to storage variables outside of functions.
+
+Single Contract:
+The final code should contain only one contract.

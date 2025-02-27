@@ -212,6 +212,8 @@ class EVMBytecodeParser(BlockParser):
             # for opcodes with an argument, consume the argument
             if const_size > 0:
                 const = int.from_bytes(self.__consume(const_size), ENDIANNESS)
+            elif const_size == 0:
+                const = 0
 
             self._ops.append(evm_cfg.EVMOp(pc, op, const))
 

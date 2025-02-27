@@ -40,7 +40,8 @@ import src.vandal.patterns as patterns
 import src.vandal.tac_cfg as tac_cfg
 import src.vandal.memtypes as memtypes
 import json
-
+from src.vandal.dataflow import stack_size_analysis
+from src.vandal.lattice import IntLatticeElement
 
 class Analysis(abc.ABC):
     def __init__(self, source: object):
@@ -49,7 +50,7 @@ class Analysis(abc.ABC):
           source: object instance to be exported
         """
         self.source = source
-
+        self.total_delta = 0
     @abc.abstractmethod
     def analyze(self):
         """
@@ -68,7 +69,7 @@ class CostAnalysis(Analysis):
         super().__init__(cfg)
 
     def extract_fun(block):
-        arg_num = int(str(block).count('CALLDATALOAD')/2)
+        arg_num = int(str(block).count('CALLDATALOAD')/2) #wtf
         entry = str(hex(block.entry)) + '-' + str(arg_num)
         return entry
 
@@ -149,10 +150,17 @@ class CostAnalysis(Analysis):
         cfg_json['public_methods'] = public_methods
         cfg_json['private_methods'] = private_methods
         blocks = []
+        # analysis, _ = stack_size_analysis(cfg)
 
         for blk in cfg.blocks:
             blk_obj = {}
             blk_obj['address'] = hex(blk.entry)
+            blk_obj['remaining_stack'] = [str(v) for v in blk.exit_stack] # should actually use exit_stack because swapping problem #[str(v) for v in blk.remaining_stack.value]
+            blk_obj['empty_pops'] = blk.delta_stack.empty_pops
+            # blk_obj['exit_stack'] = [str(v) for v in blk.exit_stack]
+            # blk_obj['str'] = str(blk)
+            # breakpoint()
+            # blo_a = analysis[blk]
             inst_list = []
             pred_list = []
             succ_list = []
@@ -161,14 +169,26 @@ class CostAnalysis(Analysis):
             for tac_op in blk.tac_ops:
                 # print('inst--->', tac_op)
                 inst_str = str(tac_op)
-                if 'S0' in str(tac_op) and len(blk.preds) == 1:
-                    myped = blk.preds[0]
-                    s1 = myped.exit_stack.peek(0)
-                    s2 = blk.entry_stack.peek(0)
-                    if not str(s1) == str(s2):
-                        inst_str = str(tac_op).replace(str(s2), str(s1))
+
+                # if "0xb2" in inst_str:
+                    # print("inst_str", inst_str)
+                    # print("blk.preds", blk.preds)
+                    # print("blk.entry_stack", blk.entry_stack)
+                    # print("blk.exit_stack", blk.exit_stack)
+                    # breakpoint()
+
+                # if 'S0' in str(tac_op) and len(blk.preds) == 1:
+                #     myped = blk.preds[0]
+                #     s1 = myped.exit_stack.peek(0)
+                #     s2 = blk.entry_stack.peek(0)
+                #     if not str(s1) == str(s2):
+                #         inst_str = str(tac_op).replace(str(s2), str(s1))
 
                 inst_list.append(inst_str)
+                # inst_list.append('delta:' + str(tac_op.opcode.stack_delta()))
+                # blo_a += IntLatticeElement(tac_op.opcode.stack_delta())
+                # print('Totaldelta:' + str(blo_a.value))
+                # inst_list.append('Totaldelta:' + str(blo_a.value))
 
             for su in blk.preds:
                 pred_list.append(hex(su.entry))

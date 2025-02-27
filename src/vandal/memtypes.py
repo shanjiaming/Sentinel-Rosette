@@ -442,7 +442,6 @@ class MetaVariable(Variable):
         return type(self)(self.name,
                           self.payload,
                           copy.deepcopy(self.def_sites, memodict))
-from watchpoints import watch
 
 class VariableStack(LatticeElement):
     """

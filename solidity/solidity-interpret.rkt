@@ -1,9 +1,9 @@
 #lang rosette
 (require "../simulator-rosette.rkt" "../ops-rosette.rkt" "../utils.rkt"
-         "../inst.rkt" "solidity-machine.rkt" graph rosette/lib/match rosette/lib/angelic)
+         "../inst.rkt" "solidity-machine.rkt" rosette/lib/match rosette/lib/angelic)
 (require (prefix-in unsafe- (only-in racket box set-box! unbox)))
 (require racket/pretty)
-(require debug/repl)
+;;; (require debug/repl)
 (require rosette/solver/smt/z3)
 (require "../jsonlog.rkt")
 (current-solver (z3 #:logic 'QF_UFBV))

@@ -5,9 +5,49 @@ This project mainly implements a symbolic EVM in rosette, and it use it to maxim
 
 ## Requirements:
 
-rosette (and maybe some packages), foundary toolchain(forge, cast, anvil)
-python >= 3.5 (and maybe some packages) (for vandal parsing).
+Install foundary toolchain(forge, cast, anvil)
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+source ~/.bashrc
+foundryup
+```
 
+rosette (and maybe some packages), 
+
+
+Install racket (suppose you are linux, otherwise see https://download.racket-lang.org/)
+```bash
+wget https://download.racket-lang.org/installers/8.15/racket-8.15-x86_64-linux-cs.sh
+sudo sh racket-8.15-x86_64-linux-cs.sh
+```
+Do you want a Unix-style distribution? 
+...
+Enter yes/no (default: no) > no
+
+Where do you want to install the "racket" directory tree?
+  1 - /usr/racket [default]
+  2 - /usr/local/racket
+  3 - ~/racket (/root/racket)
+  4 - ./racket (here)
+  Or enter a different "racket" directory to install in.
+> 2
+...
+If you want to install new system links within the "bin", "man"
+  and "share/applications" subdirectories of a common directory prefix
+  (for example, "/usr/local") then enter the prefix of an existing
+  directory that you want to use.  This might overwrite existing symlinks,
+  but not files.
+(default: skip links) > /usr/local
+
+
+Then run
+```bash
+raco pkg install rosette
+raco pkg install debug
+```
+Would you like to install these dependencies? [Y/n/a/c/?] Y
+
+Install python >= 3.5 (and maybe some packages) (for vandal parsing).
 
 ## How to run:
 
@@ -22,7 +62,7 @@ Other attacks are not supported yet because of unimplemented EVM opcodes / unimp
 
 ```
 export EXP_NAME=ATTACK_NAME
-./run.sh
+bash run.sh
 ```
 
 Check the result in out/EXP_NAME/result.txt
@@ -55,7 +95,7 @@ Then you can use
 
 ```
 export EXP_NAME=ATTACK_NAME
-./run.sh
+bash run.sh
 ```
 
 

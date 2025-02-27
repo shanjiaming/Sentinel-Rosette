@@ -2,10 +2,10 @@
 
 (require "solidity/solidity-parser.rkt" "solidity/solidity-printer.rkt" "solidity/solidity-machine.rkt"
          "solidity/solidity-interpret.rkt" "memory-racket.rkt" "utils.rkt"
-         json graph racket/sandbox)
+         json racket/sandbox)
 (require racket/pretty)
 (require rosette/solver/smt/z3)
-(require debug/repl)
+;;; (require debug/repl)
 (require racket/path)
 (require "jsonlog.rkt")
 

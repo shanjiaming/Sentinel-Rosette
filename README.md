@@ -14,7 +14,9 @@ docker pull shanjiaming/sentinel-rosette-env:latest
 docker run -it shanjiaming/sentinel-rosette-env:latest
 ```
 
-So you don't need to install dependencies.
+Then git clone this repo in the docker container.
+
+By this way, you don't need to install dependencies.
 
 ### Install dependencies
 
